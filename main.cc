@@ -6,6 +6,10 @@
 #include <time.h>
 using namespace std;
 
+
+// Comment to test out commiting and pushing with git
+
+
 //Mandate C++17 and above
 #if __cplusplus < 201703L
 #error This code requires C++17 and above, sucks to be you. Compile with --std=c++17
@@ -84,6 +88,35 @@ void print_world(size_t rows, size_t cols) {
 	//So you are going to do a doubly-nested for loop iterating over the whole world, printing the colors of the owner of each tile one per space or something
 }
 
+
+// Lloyd Function
+void lloyd() {
+	// For every city
+	for (size_t i = 0; i < city_list.size(); i++) {
+		int row_sum = 0;
+		int row_count = 0;
+		int col_sum = 0;
+		int col_count = 0;
+
+		for(int row = 0; row < world.size(); row++){
+			for(int col = 0; col < world.at(row).size(); col++){
+				if (world.at(row).at(col).owner == i) {
+					row_sum += row;
+					row_count++;
+
+					col_sum += col;
+					col_count++;
+				}
+			}
+		}
+
+		city_list.at(i).row = row_sum / row_count;
+		city_list.at(i).col = col_sum / col_count;
+	}
+}
+
+
+
 void die() {
 	cout << "BAD INPUT!\n";
 	exit(1);
@@ -131,30 +164,37 @@ int main() {
 	float min_dist = 0.0;
 	int mdi = 0; //Minimum Distance Index
 
-	for(int i = 0; i < rows; i++){
-		for(int j = 0; j < cols; j++){
-			for(size_t k = 0; k < city_list.size(); k++){
-				City ci = city_list.at(k);
-				dist = hypot(abs(i-ci.row), abs(j-ci.col));
-				if(k == 0){
-					min_dist = dist;
-					mdi = k;
-				} else if(dist < min_dist){
-					min_dist = dist;
-					mdi = k;
+	while (true) {
+		for(int i = 0; i < rows; i++){
+			for(int j = 0; j < cols; j++){
+				for(size_t k = 0; k < city_list.size(); k++){
+					City ci = city_list.at(k);
+					dist = hypot(abs(i-ci.row), abs(j-ci.col));
+					if(k == 0){
+						min_dist = dist;
+						mdi = k;
+					} else if(dist < min_dist){
+						min_dist = dist;
+						mdi = k;
+					}
 				}
+				world.at(i).at(j).owner = mdi;
 			}
-			world.at(i).at(j).owner = mdi;
 		}
-	}
-	//TODO: Run the Voronoi calculation on the world map and set each tile's owner to be the index of the city that is closest to it
-	//Simplest algorithm: for every tile in the world, find the nearest city, and set the owner of that tile to be the index of the city in the vector of cities
-	//Hypot - a function that does the pythagorean theorem
-	//Something like that: float distance = hypot(my_row-city_row,my_col-city_col); 
-	//Example - this sets the owner of tile(row 10, column 30) to be city #12:
+		//TODO: Run the Voronoi calculation on the world map and set each tile's owner to be the index of the city that is closest to it
+		//Simplest algorithm: for every tile in the world, find the nearest city, and set the owner of that tile to be the index of the city in the vector of cities
+		//Hypot - a function that does the pythagorean theorem
+		//Something like that: float distance = hypot(my_row-city_row,my_col-city_col); 
+		//Example - this sets the owner of tile(row 10, column 30) to be city #12:
 
-	//print_world();
-	print_world(rows, cols);
+		//print_world();
+		print_world(rows, cols);
+
+		resetcolor();
+		string choice = read("Would you like to use the lloyd function applied?(y or n)> ");
+		if (choice == "y") lloyd();
+		else break;
+	}
 
 	//TODO: Calculate which city state is the biggest, and then print its name and size
 	vector<int> city_size (city_list.size());
