@@ -6,6 +6,10 @@
 #include <time.h>
 using namespace std;
 
+
+// Comment to test out commiting and pushing with git
+
+
 //Mandate C++17 and above
 #if __cplusplus < 201703L
 #error This code requires C++17 and above, sucks to be you. Compile with --std=c++17
