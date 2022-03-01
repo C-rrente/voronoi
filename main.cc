@@ -54,38 +54,69 @@ class City {
 };
 vector<City> city_list;
 
-//TODO: Make a print_world function that prints the world, colorized by the colors of the owning city state
-void print_world(size_t rows, size_t cols) {
-	clearscreen(); //Clears the screen
-	resetcolor(); //Sets color to white font black background
-	movecursor(0,0); //Moves the cursor to the top left of the screen
-	/*
-	   setcolor(0,0,0); //Foreground black text
-	   setbgcolor(100,200,100); //Set the background color to limeish green
-	   cout << " "; //Prints a block of color (100,200,100)
-	   */
-	bool bigcity = false;
-	for(size_t i = 0; i < rows; i++){
-		for(size_t j = 0; j < cols; j++){
-			for(City ci: city_list){
-				if(i == ci.row and j == ci.col){
-					setcolor(255,255,255);
-					cout << char(toupper(ci.name[0]));
-					bigcity = true;
-					break;
-				}
+void edge_detection(size_t rows, size_t cols) {
+	cout << "EDGE" << endl;
+	for (int row = 1; row < rows; row++) {
+		for (int col = 1; col < cols; col++) {
+			Tile tile_here = world.at(row).at(col);
+			Tile prev_row = world.at(row).at(col - 1);
+			Tile prev_col = world.at(row - 1).at(col);
+
+
+			if (tile_here.owner != prev_row.owner) {
+				if (tile_here.content == '-') world.at(row).at(col).content = '+'; 
+				else world.at(row).at(col).content = '|';
+
+				if (prev_row.content == '-') world.at(row).at(col - 1).content = '+';
+				else world.at(row).at(col - 1).content = '|';
 			}
-			int tile_owner = world.at(i).at(j).owner;
-			setcolor(0,0,0); //Foreground black text
-			setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-			//setbgcolor(100,200,100); //Set the background color to limeish green
-			if(!bigcity) cout << " "; //Prints a block of color (100,200,100)
-			else bigcity = false;
+			if (tile_here.owner != prev_col.owner) {
+				if (tile_here.content == '|') world.at(row).at(col).content = '+';
+				else world.at(row).at(col).content = '-';
+
+				if (prev_col.content == '|') world.at(row - 1).at(col).content = '+';
+				else world.at(row - 1).at(col).content = '-';
+			}
+
+			// If this tile is a city, mark it with the first letter of the name
+			if (row == city_list.at(tile_here.owner).row && col == city_list.at(tile_here.owner).col) world.at(row).at(col).content = city_list.at(tile_here.owner).name.at(0);
 		}
 	}
-	//YOU: For every tile in the world, set the background color (using setbgcolor(r,g,b)) to be the color of the owner's city then print a space.
-	//It will print out one block of color of some sort of lime green
-	//So you are going to do a doubly-nested for loop iterating over the whole world, printing the colors of the owner of each tile one per space or something
+}
+
+//TODO: Make a print_world function that prints the world, colorized by the colors of the owning city state
+void print_world(size_t rows, size_t cols) {
+	// Original Print Function (by Kerney)
+	int last_city = -1; //Reduce bandwidth requirement by caching last color
+    clearscreen();
+    resetcolor();
+    movecursor(0,0);
+    setcolor(0,0,0); //Foreground black text
+    for (size_t i = 0; i < rows; i++) {
+        for (size_t j = 0; j < cols; j++) {
+            //movecursor(i,j);
+            auto owner = world.at(i).at(j).owner;
+            auto content = world[i][j].content;
+            if (!content) content = ' ';
+            if (owner == -1) {
+                if (last_city != -1) setbgcolor(0,0,0);
+                last_city = owner;
+                cout << content;
+            }
+            else {
+                City c = city_list.at(owner);
+
+				// Only draw with color if tile has content
+				if (content != ' ') setbgcolor(c.r,c.g,c.b);
+				else setbgcolor(0, 0, 0);
+
+                last_city = owner;
+                cout << content;
+            }
+        }
+        cout << endl;
+    }
+    resetcolor();
 }
 
 
@@ -128,10 +159,7 @@ int main() {
 	cout << GREEN;
 	unsigned int states = read("How many city states do you want: ");
 	if (states < 2) die();
-	//city_list.resize(states);
-	//for (const City &c : city_list) cout << c.name << endl;
 	cout << RESET;
-	//This is just a dummy for loop that will add Fresno and hopefully random cities to the world
 	auto [rows,cols] = get_terminal_size(); //C++17 structured bindings
 	for(size_t i = 0; i < states; i++){
 		int nrow = rand() % rows;
@@ -149,14 +177,6 @@ int main() {
 		city_list.push_back(a);
 	}
 	for (const City &c : city_list) cout << c.name << endl;
-	//TODO: Read in cities here from a file or allow the user to add/delete cities
-	//DONE Kinda
-
-	//They can either be randomly generated or manually typed in
-	//Every city will have a color and a name
-	//And saved to a file
-
-	//Size the 2D vector to be the size of the terminal
 	world.resize(rows);
 	for (size_t i = 0; i < (size_t)rows; i++) world[i].resize(cols);
 
@@ -181,13 +201,8 @@ int main() {
 				world.at(i).at(j).owner = mdi;
 			}
 		}
-		//TODO: Run the Voronoi calculation on the world map and set each tile's owner to be the index of the city that is closest to it
-		//Simplest algorithm: for every tile in the world, find the nearest city, and set the owner of that tile to be the index of the city in the vector of cities
-		//Hypot - a function that does the pythagorean theorem
-		//Something like that: float distance = hypot(my_row-city_row,my_col-city_col); 
-		//Example - this sets the owner of tile(row 10, column 30) to be city #12:
-
-		//print_world();
+		
+		edge_detection(rows, cols);
 		print_world(rows, cols);
 
 		resetcolor();
