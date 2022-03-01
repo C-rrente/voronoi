@@ -51,135 +51,68 @@ class City {
 };
 vector<City> city_list;
 
-void print_world(size_t rows, size_t cols) {
-	clearscreen(); //Clears the screen
-	resetcolor(); //Sets color to white font black background
-	movecursor(0,0); //Moves the cursor to the top left of the screen
-	bool bigcity = false; //This will tell if the char being output is the city
-	bool noslope = false; //If we have a '-'
-	bool pslope = false; //If we have a '+'
-	bool infslope = false; //If we have a '|'
-	for(size_t i = 0; i < rows; i++){
-		for(size_t j = 0; j < cols; j++){
-			for(City ci: city_list){
-				if((int)i == ci.row and (int)j == ci.col){
-					setcolor(0,0,0);
-					setbgcolor(ci.r, ci.g, ci.b);
-					cout << char(toupper(ci.name[0]));
-					bigcity = true;
-					break;
-				}
+void edge_detection(size_t rows, size_t cols) {
+	cout << "EDGE" << endl;
+	for (int row = 1; row < rows; row++) {
+		for (int col = 1; col < cols; col++) {
+			Tile tile_here = world.at(row).at(col);
+			Tile prev_row = world.at(row).at(col - 1);
+			Tile prev_col = world.at(row - 1).at(col);
+
+
+			if (tile_here.owner != prev_row.owner) {
+				if (tile_here.content == '-') world.at(row).at(col).content = '+'; 
+				else world.at(row).at(col).content = '|';
+
+				if (prev_row.content == '-') world.at(row).at(col - 1).content = '+';
+				else world.at(row).at(col - 1).content = '|';
 			}
-			int tile_owner = world.at(i).at(j).owner;
-			if(i > 0 and i < cols-1 and j > 0 and j < rows-1){
-				if(tile_owner == world.at(i-1).at(j).owner and tile_owner == world.at(i+1).at(j).owner and tile_owner == world.at(i).at(j+1).owner and tile_owner == world.at(i).at(j+1).owner and tile_owner == world.at(i+1).at(j+1).owner and tile_owner == world.at(i+1).at(j-1).owner and tile_owner == world.at(i-1).at(j+1).owner and tile_owner == world.at(i-1).at(j-1).owner){
-					setcolor(0,0,0);
-					setbgcolor(0,0,0);
-				} else if(tile_owner != world.at(i+1).at(j).owner){
-					setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-					noslope = true;
-				} else if(tile_owner != world.at(i-1).at(j).owner){
-					setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-					noslope = true;
-				} else if(tile_owner != world.at(i).at(j+1).owner){
-					setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-					infslope = true;
-				} else if(tile_owner != world.at(i).at(j-1).owner){
-					setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-					infslope = true;
-				} else if(tile_owner != world.at(i+1).at(j+1).owner){
-					setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-					pslope = true;
-				} else if(tile_owner != world.at(i+1).at(j-1).owner){
-					setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-					pslope = true;
-				} else if(tile_owner != world.at(i-1).at(j+1).owner){
-					setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-					pslope = true;
-				} else if(tile_owner != world.at(i-1).at(j-1).owner){
-					setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-					pslope = true;
-				} else {
-					setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-				}
-			} else if(i == 0){
-				if(j == 0){
-					//Check right and down
-					if(tile_owner != world.at(i+1).at(j).owner){
-						setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-						noslope = true;
-					} else if(tile_owner != world.at(i).at(j+1).owner){
-						setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-						infslope = true;
-					}
-				} else if(j == rows-1){
-					//Check right and up
-					if(tile_owner != world.at(i+1).at(j).owner){
-						setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-						noslope = true;
-					} else if(tile_owner != world.at(i).at(j-1).owner){
-						setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-						infslope = true;
-					}
-				} 			
-			} else if(i == cols-1){
-				if(j == 0){
-					//Check left and down
-					if(tile_owner != world.at(i-1).at(j).owner){
-						setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-						noslope = true;
-					} else if(tile_owner != world.at(i).at(j+1).owner){
-						setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-						infslope = true;
-					}
-				} else if(j == rows-1){
-					//Check up and left
-					if(tile_owner != world.at(i-1).at(j).owner){
-						setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-						noslope = true;
-					} else if(tile_owner != world.at(i).at(j-1).owner){
-						setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-						infslope = true;
-					}
-				} else if(j > 0 and j < rows-1){
-					if(tile_owner != world.at(i-1).at(j).owner){
-						setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-						noslope = true;
-					} else if(tile_owner != world.at(i).at(j+1).owner){
-						setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-						infslope = true;
-					} else if(tile_owner != world.at(i).at(j-1).owner){
-						setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-						infslope = true;
-					}
-				} 			
+			if (tile_here.owner != prev_col.owner) {
+				if (tile_here.content == '|') world.at(row).at(col).content = '+';
+				else world.at(row).at(col).content = '-';
+
+				if (prev_col.content == '|') world.at(row - 1).at(col).content = '+';
+				else world.at(row - 1).at(col).content = '-';
 			}
-			//setcolor(0,0,0); //Foreground black text
-			//setbgcolor(city_list.at(tile_owner).r, city_list.at(tile_owner).g, city_list.at(tile_owner).b);
-			//if(i == 0 or i == rows-1 or j == 0 or j == cols-1){
-			//	setbgcolor(0,0,0);
-			//	cout << " ";
-			//TODO Fix this trash lmao and learn how to detect edge
-			//} else {
-			if(noslope){
-				cout << "-";
-				noslope = false;
-			} else if(infslope){
-				cout << "|";
-				infslope = false;
-			} else if(pslope){
-				cout << "+";
-				pslope = false;
-			} else if(bigcity){
-				bigcity = false;
-			} else {
-				cout << " ";
-			}
-			//}
-			//setbgcolor(0,0,0);
-			//resetcolor();
+
+			// If this tile is a city, mark it with the first letter of the name
+			if (row == city_list.at(tile_here.owner).row && col == city_list.at(tile_here.owner).col) world.at(row).at(col).content = city_list.at(tile_here.owner).name.at(0);
 		}
 	}
+}
+
+void print_world(size_t rows, size_t cols) {
+	// Original Print Function (by Kerney)
+	int last_city = -1; //Reduce bandwidth requirement by caching last color
+    clearscreen();
+    resetcolor();
+    movecursor(0,0);
+    setcolor(0,0,0); //Foreground black text
+    for (size_t i = 0; i < rows; i++) {
+        for (size_t j = 0; j < cols; j++) {
+            //movecursor(i,j);
+            auto owner = world.at(i).at(j).owner;
+            auto content = world[i][j].content;
+            if (!content) content = ' ';
+            if (owner == -1) {
+                if (last_city != -1) setbgcolor(0,0,0);
+                last_city = owner;
+                cout << content;
+            }
+            else {
+                City c = city_list.at(owner);
+
+				// Only draw with color if tile has content
+				if (content != ' ') setbgcolor(c.r,c.g,c.b);
+				else setbgcolor(0, 0, 0);
+
+                last_city = owner;
+                cout << content;
+            }
+        }
+        cout << endl;
+    }
+    resetcolor();
 }
 
 void die() {
@@ -234,6 +167,8 @@ int main() {
 			world.at(i).at(j).owner = mdi;
 		}
 	}
+
+	edge_detection(rows, cols);
 	print_world(rows, cols);
 	vector<int> city_size (city_list.size());
 	for(vector<Tile> v: world){
