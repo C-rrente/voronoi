@@ -1,5 +1,5 @@
-#include "/public/read.h"
-#include "/public/colors.h"
+#include "../read/read.h"
+#include "../colors/colors.h"
 #include <vector>
 #include <cmath>
 #include <algorithm>
@@ -164,7 +164,7 @@ void die() {
 
 int main() {
 	srand (time(NULL)); //Set the seed
-	cout << RED << "Welcome to Voroni Kingdoms!\n" << RESET;
+	cout << RED << "Welcome to Voronoi Kingdoms!\n" << RESET;
 	cout << GREEN;
 	unsigned int states = read("How many city states do you want: ");
 	if (states < 2) die();
@@ -185,7 +185,7 @@ int main() {
 		a.col = ncol;
 		city_list.push_back(a);
 	}
-	for (const City &c : city_list) cout << c.name << endl;
+	//for (const City &c : city_list) cout << c.name << endl;
 	world.resize(rows);
 	for (size_t i = 0; i < (size_t)rows; i++) world[i].resize(cols);
 
@@ -236,6 +236,6 @@ int main() {
 		}
 	}
 	resetcolor();
-	cout << fcity.name << ": " << max << endl;
+	//cout << fcity.name << ": " << max << endl;
 }
 #endif

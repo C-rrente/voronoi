@@ -1,35 +1,17 @@
-====================================
-__     _____  ____   ___  _   _ ___ 
-\ \   / / _ \|  _ \ / _ \| \ | |_ _|
- \ \ / / | | | |_) | | | |  \| || | 
-  \ V /| |_| |  _ <| |_| | |\  || | 
-   \_/  \___/|_| \_\\___/|_| \_|___|
-                                    
-====================================
+__     _____  ____   ___  _   _  ___ ___ 
+\ \   / / _ \|  _ \ / _ \| \ | |/ _ \_ _|
+ \ \ / / | | | |_) | | | |  \| | | | | | 
+  \ V /| |_| |  _ <| |_| | |\  | |_| | | 
+   \_/  \___/|_| \_\\___/|_| \_|\___/___|
+                                         
 
-For this assignment you'll learn how to partition a world map based on which
-city states are closest to each spot in the world.
+Welcome!
 
-Look for the places where it says TODO or YOU, that's where you will write cod
+This code uses two libraries from ShakaUVM on GitHub
+To install use,
 
-You will:
-1) Write an algorithm to set the owner of each tile to be the city state
-closest to it. You can use the hypot() function to compute distance.
+git clone https://github.com/ShakaUVM/colors
+git clone https://github.com/ShakaUVM/read
 
-2) Write a doubly nested for loop in print_world to print the world. Use the
-/public/colors.h library to colorize the map properly
-
-3) Make a system by which you can load, store, and edit the names and colors
-of the city states in the world.
-
-4) Extra Credit: Generate terrain and buildings and stuff that will display in the
-foreground over the map, and procedurally generate it in an interesting
-looking way. Use the foreground color and background color functions in
-colors.h to do this. 
-
-5) At the end, print which city state has the largest amount of terrain
-
-I did show you how structured bindings works as well as the colors.h and
-read.h header files on the server... spend some time reading them or reading
-about them if you want.
+Place the files wherever you'd like, and include them in main accordingly
 
